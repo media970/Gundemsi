@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "./lib/prisma";
 import {
   ADMIN_COOKIE,
   verifyAdminSession,
@@ -35,43 +34,7 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  const admin = await prisma.admin.findUnique({
-    where: {
-      id: session.adminId,
-    },
-    select: {
-      id: true,
-      sessionVersion: true,
-    },
-  });
-
-  if (
-    !admin ||
-    admin.sessionVersion !== session.sessionVersion
-  ) {
-    const response = isAdminApi
-      ? NextResponse.json(
-          { error: "Oturum geçersiz." },
-          { status: 401 }
-        )
-      : NextResponse.redirect(
-          new URL("/admin/login", request.url)
-        );
-
-    response.cookies.delete(ADMIN_COOKIE);
-
-    return response;
-  }
-
-const requestHeaders = new Headers(request.headers);
-
-requestHeaders.set("x-admin-id", admin.id);
-
-return NextResponse.next({
-  request: {
-    headers: requestHeaders,
-  },
-});
+return NextResponse.next();
 }
 
 export const config = {
