@@ -11,6 +11,30 @@ import {
   hashRecoveryCode,
 } from "../../../../../lib/admin-recovery";
 
+export async function GET() {
+  try {
+    const admin = await getCurrentAdmin();
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Yetkisiz erişim." },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json({
+      totpEnabled: admin.totpEnabled,
+    });
+  } catch (error) {
+    console.error("TOTP status error:", error);
+
+    return NextResponse.json(
+      { error: "TOTP durumu alınırken bir hata oluştu." },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const admin = await getCurrentAdmin();

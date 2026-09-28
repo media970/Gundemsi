@@ -41,63 +41,29 @@ export default function SettingsClient() {
   const [totpEnabled, setTotpEnabled] = useState(false);
   const [totpMessage, setTotpMessage] = useState("");
   const [totpError, setTotpError] = useState("");
-   // Recovery kodları
+  // Recovery kodları
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [recoveryCodeInput, setRecoveryCodeInput] = useState("");
   const [recoveryLoading, setRecoveryLoading] = useState(false);
   const [recoveryError, setRecoveryError] = useState("");
   const [recoveryMessage, setRecoveryMessage] = useState("");
 
-  async function loadSettings() {
-    try {
-      const response = await fetch("/api/admin/settings");
+async function loadSettings() {
+  try {
+    const response = await fetch("/api/admin/security/totp");
 
-      if (!response.ok) return;
+    if (!response.ok) return;
 
-      const data = await response.json();
+    const data = await response.json();
 
-      setInstagram(data.instagram ?? "");
-      setTotpEnabled(Boolean(data.totpEnabled)); 
-    } catch {
-      // Sessizce geç
-    }
+    setTotpEnabled(Boolean(data.totpEnabled));
+  } catch {
+    // Sessizce geç
   }
-
+}
   useEffect(() => {
     void loadSettings();
   }, []);
-
-  async function handleSaveInstagram() {
-    setSavingInstagram(true);
-    setInstagramMessage("");
-
-    try {
-      const response = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          instagram,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setInstagramMessage(
-          data.message ?? "Ayar kaydedilemedi."
-        );
-        return;
-      }
-
-      setInstagramMessage("Ayarlar kaydedildi.");
-    } catch {
-      setInstagramMessage("Bir hata oluştu.");
-    } finally {
-      setSavingInstagram(false);
-    }
-  }
 
   function resetSecurityForm() {
     setCurrentPassword("");
@@ -403,56 +369,6 @@ setTotpSetupOpen(true);
 
   return (
     <div className="min-h-screen space-y-8 bg-[#080b12] px-4 py-6 text-slate-100 sm:px-6 sm:py-8">
-      {/* Instagram */}
-      <section className="rounded-2xl border border-slate-800 bg-[#111722] p-6">
-        <h2 className="text-xl font-black">
-          Sosyal Medya
-        </h2>
-
-        <div className="mt-6">
-          <label
-            htmlFor="instagram"
-            className="text-sm font-semibold text-slate-300"
-          >
-            Instagram bağlantısı
-          </label>
-
-          <input
-            id="instagram"
-            type="url"
-            value={instagram}
-            onChange={(event) =>
-              setInstagram(event.target.value)
-            }
-            placeholder="https://www.instagram.com/gundems.i/"
-            className="mt-2 w-full rounded-xl border border-slate-800 bg-[#0d111a] px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-violet-500"
-          />
-
-          <p className="mt-2 text-xs text-slate-500">
-            Sağ alttaki Instagram butonu bu bağlantıyı
-            kullanır.
-          </p>
-        </div>
-
-        <div className="mt-6 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={handleSaveInstagram}
-            disabled={savingInstagram}
-            className="rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:from-violet-500 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {savingInstagram
-              ? "Kaydediliyor..."
-              : "Kaydet"}
-          </button>
-
-          {instagramMessage && (
-            <span className="text-sm font-medium text-slate-400">
-              {instagramMessage}
-            </span>
-          )}
-        </div>
-      </section>
 
       {/* Güvenlik */}
       <section className="rounded-2xl border border-slate-800 bg-[#111722] p-6">
