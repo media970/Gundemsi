@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+
 const STORAGE_KEY = "gundemsi-theme";
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
+
     const savedTheme = window.localStorage.getItem(STORAGE_KEY);
 
     if (savedTheme === "dark") {
@@ -39,16 +41,8 @@ export default function ThemeToggle() {
       type="button"
       aria-label={dark ? "Açık temaya geç" : "Koyu temaya geç"}
       title={dark ? "Açık temaya geç" : "Koyu temaya geç"}
-      onPointerDown={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        changeTheme();
-      }}
-      onClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-      }}
-      style={{
+onClick={changeTheme}
+        style={{
         width: "42px",
         height: "42px",
         minWidth: "42px",

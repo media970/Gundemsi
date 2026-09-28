@@ -225,8 +225,12 @@ export default function SettingsClient() {
     setTotpMessage("");
 
     try {
-      const response = await fetch("/api/admin/security/totp/setup", {
+      const response = await fetch("/api/admin/security/totp", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "setup" }),
       });
       const data = await response.json();
 
@@ -265,12 +269,12 @@ setTotpSetupOpen(true);
     setTotpVerifying(true);
 
     try {
-      const response = await fetch("/api/admin/security/totp/verify", {
+      const response = await fetch("/api/admin/security/totp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ action: "verify", code }),
       });
       const data = await response.json();
 
@@ -307,13 +311,13 @@ setTotpSetupOpen(true);
 
     try {
       const response = await fetch(
-        "/api/admin/security/totp/disable",
+        "/api/admin/security/totp",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ action: "disable", code }),
         }
       );
 
@@ -358,14 +362,18 @@ setTotpSetupOpen(true);
 
     try {
       const response = await fetch(
-        "/api/auth/totp/recovery-regenerate",
+        "/api/admin/security/totp",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({
+  action: "recovery-regenerate",
+  code,
+}),
+
         }
       );
 
