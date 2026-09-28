@@ -60,3 +60,4 @@ package.json.backup
 
 # local uploaded files
 /public/uploads/
+.vercel

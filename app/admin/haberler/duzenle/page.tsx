@@ -1,16 +1,16 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { ChangeEvent, Suspense, useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const categories = [
-  { name: "Gündem", slug: "gundem" },
-  { name: "Türkiye", slug: "turkiye" },
-  { name: "Dünya", slug: "dunya" },
+  { name: "GÃ¼ndem", slug: "gundem" },
+  { name: "TÃ¼rkiye", slug: "turkiye" },
+  { name: "DÃ¼nya", slug: "dunya" },
   { name: "Teknoloji", slug: "teknoloji" },
   { name: "Ekonomi", slug: "ekonomi" },
   { name: "Spor", slug: "spor" },
-  { name: "Kültür & Yaşam", slug: "kultur-yasam" },
+  { name: "KÃ¼ltÃ¼r & YaÅŸam", slug: "kultur-yasam" },
   { name: "Oyun", slug: "oyun" },
 ];
 
@@ -37,7 +37,7 @@ async function cropCoverTo16x9(file: File): Promise<Blob> {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error("Görsel okunamadı."));
+      img.onerror = () => reject(new Error("GÃ¶rsel okunamadÄ±."));
       img.src = sourceUrl;
     });
 
@@ -64,7 +64,7 @@ async function cropCoverTo16x9(file: File): Promise<Blob> {
     const context = canvas.getContext("2d");
 
     if (!context) {
-      throw new Error("Görsel işlenemedi.");
+      throw new Error("GÃ¶rsel iÅŸlenemedi.");
     }
 
     context.drawImage(
@@ -88,7 +88,7 @@ async function cropCoverTo16x9(file: File): Promise<Blob> {
       canvas.toBlob(
         (result) => {
           if (result) resolve(result);
-          else reject(new Error("Görsel oluşturulamadı."));
+          else reject(new Error("GÃ¶rsel oluÅŸturulamadÄ±."));
         },
         outputType,
         0.92
@@ -99,10 +99,10 @@ async function cropCoverTo16x9(file: File): Promise<Blob> {
   }
 }
 
-export default function EditNewsPage() {
-  const params = useParams();
+function EditNewsPage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const id = searchParams.get("id");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -178,17 +178,17 @@ export default function EditNewsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Kapak görseli yüklenemedi.");
+        throw new Error(data.error || "Kapak gÃ¶rseli yÃ¼klenemedi.");
       }
 
       setCoverImage(data.url);
-      setMessage("Kapak görseli hazırlandı ve yüklendi.");
+      setMessage("Kapak gÃ¶rseli hazÄ±rlandÄ± ve yÃ¼klendi.");
       setMessageType("success");
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Kapak görseli yüklenirken bir hata oluştu."
+          : "Kapak gÃ¶rseli yÃ¼klenirken bir hata oluÅŸtu."
       );
       setMessageType("error");
     } finally {
@@ -207,7 +207,7 @@ export default function EditNewsPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Haber alınamadı.");
+          throw new Error(data.error || "Haber alÄ±namadÄ±.");
         }
 
         const article = data.article;
@@ -264,7 +264,7 @@ export default function EditNewsPage() {
         setMessage(
           error instanceof Error
             ? error.message
-            : "Haber yüklenirken bir hata oluştu."
+            : "Haber yÃ¼klenirken bir hata oluÅŸtu."
         );
         setMessageType("error");
       } finally {
@@ -282,13 +282,13 @@ export default function EditNewsPage() {
 
     try {
       if (!coverImage) {
-        throw new Error("Haber kapağı eklemelisin.");
+        throw new Error("Haber kapaÄŸÄ± eklemelisin.");
       }
 
       const validBlocks = blocks.filter((block) => block.content.trim());
 
       if (validBlocks.length === 0) {
-        throw new Error("En az bir dolu içerik bloğu eklemelisin.");
+        throw new Error("En az bir dolu iÃ§erik bloÄŸu eklemelisin.");
       }
 
       const sourceList = sources
@@ -336,21 +336,21 @@ export default function EditNewsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Haber güncellenemedi.");
+        throw new Error(data.error || "Haber gÃ¼ncellenemedi.");
       }
 
       setStatus(newStatus);
       setMessage(
         newStatus === "PUBLISHED"
-          ? "Haber başarıyla güncellendi ve yayınlandı."
-          : "Taslak başarıyla güncellendi."
+          ? "Haber baÅŸarÄ±yla gÃ¼ncellendi ve yayÄ±nlandÄ±."
+          : "Taslak baÅŸarÄ±yla gÃ¼ncellendi."
       );
       setMessageType("success");
     } catch (error) {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Haber güncellenirken bir hata oluştu."
+          : "Haber gÃ¼ncellenirken bir hata oluÅŸtu."
       );
       setMessageType("error");
     } finally {
@@ -362,7 +362,7 @@ export default function EditNewsPage() {
     return (
       <main className="min-h-screen bg-[#080b12] text-slate-100">
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
-          <p className="text-sm text-slate-400">Haber yükleniyor...</p>
+          <p className="text-sm text-slate-400">Haber yÃ¼kleniyor...</p>
         </div>
       </main>
     );
@@ -374,9 +374,9 @@ export default function EditNewsPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-              GÜNDEMSİ
+              GÃœNDEMSÄ°
             </p>
-            <h1 className="mt-1 text-3xl font-black">Haberi Düzenle</h1>
+            <h1 className="mt-1 text-3xl font-black">Haberi DÃ¼zenle</h1>
           </div>
 
           <button
@@ -384,7 +384,7 @@ export default function EditNewsPage() {
             onClick={() => router.push("/admin/haberler")}
             className="rounded-xl border border-slate-800 bg-[#111722] px-4 py-2.5 text-sm font-semibold transition hover:bg-slate-800"
           >
-            ← Geri
+            â† Geri
           </button>
         </div>
 
@@ -395,7 +395,7 @@ export default function EditNewsPage() {
             <div className="mt-5 space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold">
-                  Haber Başlığı
+                  Haber BaÅŸlÄ±ÄŸÄ±
                 </label>
                 <input
                   type="text"
@@ -407,7 +407,7 @@ export default function EditNewsPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold">
-                  Kısa Açıklama
+                  KÄ±sa AÃ§Ä±klama
                 </label>
                 <textarea
                   rows={3}
@@ -427,7 +427,7 @@ export default function EditNewsPage() {
                   className="w-full rounded-xl border border-slate-800 px-4 py-3 outline-none transition focus:border-violet-500"
                 >
                   <option value="" disabled>
-                    Kategori seç
+                    Kategori seÃ§
                   </option>
                   {categories.map((category) => (
                     <option key={category.slug} value={category.slug}>
@@ -441,10 +441,10 @@ export default function EditNewsPage() {
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <label className="block text-sm font-semibold">
-                      Haber Kapağı
+                      Haber KapaÄŸÄ±
                     </label>
                     <p className="mt-1 text-xs text-slate-400">
-                      Görsel otomatik olarak 16:9 oranına kırpılır.
+                      GÃ¶rsel otomatik olarak 16:9 oranÄ±na kÄ±rpÄ±lÄ±r.
                     </p>
                   </div>
 
@@ -466,18 +466,18 @@ export default function EditNewsPage() {
                     <div className="overflow-hidden rounded-xl bg-slate-800">
                       <img
                         src={coverImage}
-                        alt="Haber kapağı"
+                        alt="Haber kapaÄŸÄ±"
                         className="aspect-video w-full object-cover"
                       />
                       <div className="px-3 py-2 text-center text-xs font-semibold text-slate-400">
-                        Değiştirmek için tıkla
+                        DeÄŸiÅŸtirmek iÃ§in tÄ±kla
                       </div>
                     </div>
                   ) : (
                     <div className="flex aspect-video items-center justify-center rounded-xl bg-[#111722] text-sm font-semibold text-slate-400">
                       {uploadingCover
-                        ? "Kapak hazırlanıyor..."
-                        : "Bilgisayardan kapak görseli seç"}
+                        ? "Kapak hazÄ±rlanÄ±yor..."
+                        : "Bilgisayardan kapak gÃ¶rseli seÃ§"}
                     </div>
                   )}
                 </label>
@@ -488,9 +488,9 @@ export default function EditNewsPage() {
           <section className="rounded-2xl border border-slate-800 bg-[#111722] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-lg font-black">Haber İçeriği</h2>
+                <h2 className="text-lg font-black">Haber Ä°Ã§eriÄŸi</h2>
                 <p className="mt-1 text-sm text-slate-400">
-                  Yazı ve görselleri istediğin sırada ekleyebilirsin.
+                  YazÄ± ve gÃ¶rselleri istediÄŸin sÄ±rada ekleyebilirsin.
                 </p>
               </div>
 
@@ -500,14 +500,14 @@ export default function EditNewsPage() {
                   onClick={() => addBlock("IMAGE")}
                   className="rounded-xl border border-slate-800 bg-[#111722] px-4 py-2.5 text-sm font-bold transition hover:bg-slate-800"
                 >
-                  + Görsel Ekle
+                  + GÃ¶rsel Ekle
                 </button>
                 <button
                   type="button"
                   onClick={() => addBlock("TEXT")}
                   className="rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:from-violet-500 hover:to-blue-500"
                 >
-                  + Yazı Ekle
+                  + YazÄ± Ekle
                 </button>
               </div>
             </div>
@@ -515,7 +515,7 @@ export default function EditNewsPage() {
             {blocks.length === 0 ? (
               <div className="mt-5 rounded-2xl border-2 border-dashed border-slate-800 bg-[#0d111a] p-10 text-center">
                 <p className="font-semibold text-slate-300">
-                  Henüz içerik eklenmedi.
+                  HenÃ¼z iÃ§erik eklenmedi.
                 </p>
               </div>
             ) : (
@@ -531,7 +531,7 @@ export default function EditNewsPage() {
                           BLOK {index + 1}
                         </p>
                         <p className="mt-1 font-bold">
-                          {block.type === "IMAGE" ? "Görsel" : "Yazı"}
+                          {block.type === "IMAGE" ? "GÃ¶rsel" : "YazÄ±"}
                         </p>
                       </div>
 
@@ -542,7 +542,7 @@ export default function EditNewsPage() {
                           disabled={index === 0}
                           className="rounded-lg border border-slate-800 bg-[#111722] px-2.5 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-30"
                         >
-                          ↑
+                          â†‘
                         </button>
                         <button
                           type="button"
@@ -550,7 +550,7 @@ export default function EditNewsPage() {
                           disabled={index === blocks.length - 1}
                           className="rounded-lg border border-slate-800 bg-[#111722] px-2.5 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-30"
                         >
-                          ↓
+                          â†“
                         </button>
                         <button
                           type="button"
@@ -566,7 +566,7 @@ export default function EditNewsPage() {
                       {block.type === "IMAGE" ? (
                         <>
                           <label className="inline-flex cursor-pointer rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:from-violet-500 hover:to-blue-500">
-                            Bilgisayardan Görsel Seç
+                            Bilgisayardan GÃ¶rsel SeÃ§
                             <input
                               type="file"
                               accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
@@ -577,7 +577,7 @@ export default function EditNewsPage() {
                                 if (!file) return;
 
                                 try {
-                                  setMessage("Görsel yükleniyor...");
+                                  setMessage("GÃ¶rsel yÃ¼kleniyor...");
                                   setMessageType("");
 
                                   const formData = new FormData();
@@ -595,18 +595,18 @@ export default function EditNewsPage() {
 
                                   if (!response.ok) {
                                     throw new Error(
-                                      data.error || "Görsel yüklenemedi."
+                                      data.error || "GÃ¶rsel yÃ¼klenemedi."
                                     );
                                   }
 
                                   updateBlock(block.id, data.url);
-                                  setMessage("Görsel başarıyla yüklendi.");
+                                  setMessage("GÃ¶rsel baÅŸarÄ±yla yÃ¼klendi.");
                                   setMessageType("success");
                                 } catch (error) {
                                   setMessage(
                                     error instanceof Error
                                       ? error.message
-                                      : "Görsel yüklenirken bir hata oluştu."
+                                      : "GÃ¶rsel yÃ¼klenirken bir hata oluÅŸtu."
                                   );
                                   setMessageType("error");
                                 }
@@ -618,7 +618,7 @@ export default function EditNewsPage() {
                             <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-[#111722]">
                               <img
                                 src={block.content}
-                                alt={`Haber görseli ${index + 1}`}
+                                alt={`Haber gÃ¶rseli ${index + 1}`}
                                 className="max-h-[500px] w-full object-contain"
                               />
                             </div>
@@ -627,7 +627,7 @@ export default function EditNewsPage() {
                       ) : (
                         <>
                           <label className="mb-2 block text-sm font-semibold">
-                            Yazı
+                            YazÄ±
                           </label>
                           <textarea
                             rows={8}
@@ -653,14 +653,14 @@ export default function EditNewsPage() {
                   onClick={() => addBlock("IMAGE")}
                   className="rounded-xl border border-slate-800 bg-[#111722] px-4 py-2.5 text-sm font-bold transition hover:bg-slate-800"
                 >
-                  + Görsel Ekle
+                  + GÃ¶rsel Ekle
                 </button>
                 <button
                   type="button"
                   onClick={() => addBlock("TEXT")}
                   className="rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:from-violet-500 hover:to-blue-500"
                 >
-                  + Yazı Ekle
+                  + YazÄ± Ekle
                 </button>
               </div>
             )}
@@ -679,7 +679,7 @@ export default function EditNewsPage() {
                   value={sources}
                   onChange={(event) => setSources(event.target.value)}
                   placeholder={
-                    "Her satıra bir kaynak yaz.\nÖrn: Reuters | https://example.com/haber"
+                    "Her satÄ±ra bir kaynak yaz.\nÃ–rn: Reuters | https://example.com/haber"
                   }
                   className="w-full resize-y rounded-xl border border-slate-800 px-4 py-3 outline-none transition focus:border-violet-500"
                 />
@@ -693,7 +693,7 @@ export default function EditNewsPage() {
                   type="text"
                   value={tags}
                   onChange={(event) => setTags(event.target.value)}
-                  placeholder="Örn: yapay zeka, teknoloji, OpenAI"
+                  placeholder="Ã–rn: yapay zeka, teknoloji, OpenAI"
                   className="w-full rounded-xl border border-slate-800 px-4 py-3 outline-none transition focus:border-violet-500"
                 />
               </div>
@@ -707,7 +707,7 @@ export default function EditNewsPage() {
                       : "bg-amber-500/10 text-amber-300"
                   }`}
                 >
-                  {status === "PUBLISHED" ? "Yayında" : "Taslak"}
+                  {status === "PUBLISHED" ? "YayÄ±nda" : "Taslak"}
                 </span>
               </div>
             </div>
@@ -741,11 +741,27 @@ export default function EditNewsPage() {
               onClick={() => saveArticle("PUBLISHED")}
               className="rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? "Yayınlanıyor..." : "Yayınla"}
+              {saving ? "YayÄ±nlanÄ±yor..." : "YayÄ±nla"}
             </button>
           </div>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function EditNewsPageWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#080b12] text-slate-100">
+          <div className="mx-auto max-w-4xl px-6 py-20 text-center">
+            <p className="text-sm text-slate-400">Haber yükleniyor...</p>
+          </div>
+        </main>
+      }
+    >
+      <EditNewsPage />
+    </Suspense>
   );
 }

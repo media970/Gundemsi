@@ -302,7 +302,7 @@ export default function AdminNewsClient({
                       </button>
 
                       <a
-                        href={`/admin/haberler/${article.id}/duzenle`}
+                        href={`/admin/haberler/duzenle?id=${article.id}`}
                         className="rounded-lg border border-slate-800 px-3 py-2 text-xs font-semibold transition hover:bg-slate-800"
                       >
                         Düzenle
