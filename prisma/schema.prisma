@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client"
+  runtime  = "workerd"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles Article[]
+}
+
+model Article {
+  id String @id @default(cuid())
+
+  title       String
+  slug        String @unique
+  description String
+
+  content    String
+  coverImage String?
+
+  comment String?
+
+  status     String  @default("DRAFT")
+  isFeatured Boolean @default(false)
+
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  sources Source[]
+  tags    Tag[]
+  blocks  ArticleBlock[]
+}
+
+model Source {
+  id   String @id @default(cuid())
+  name String
+  url  String
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  articles Article[]
+
+  createdAt DateTime @default(now())
+}
+
+model ArticleBlock {
+  id      String @id @default(cuid())
+  type    String
+  content String
+  order   Int
+
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id           String @id @default(cuid())
+  username     String @unique
+  passwordHash String
+
+  sessionVersion Int @default(0)
+
+  totpSecret  String?
+  totpEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recoveryCodes AdminRecoveryCode[]
+}
+
+model AdminRecoveryCode {
+  id       String    @id @default(cuid())
+  adminId  String
+  codeHash String
+  usedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, usedAt])
+}

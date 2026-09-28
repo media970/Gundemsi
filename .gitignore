@@ -39,3 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/generated/prisma
+/dist/
+.vinext/
+.wrangler/
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+# local database files
+*.db
+*.db-*
+package.json.backup
+
+# local uploaded files
+/public/uploads/
